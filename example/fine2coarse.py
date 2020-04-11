@@ -30,8 +30,8 @@ def change_gain(input_file, output_file):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input', help='输入conllu文件', default='/home/liangs/MyCodes/doing_codes/CSDP_Biaffine_Parser_lhy/CSDP_Biaffine_Parser_lhy/dataset/sem16_2019/fine_text.test.cor.sdp.conllu')
-    parser.add_argument('-o', '--output', help='输出conllu文件', default='text.test.coarse.conllu')
+    parser.add_argument('-i', '--input', help='输入细粒度conllu文件', default='fine_text.test.cor.sdp.conllu')
+    parser.add_argument('-o', '--output', help='输出粗粒度conllu文件', default='text.test.coarse.conllu')
     args = parser.parse_args()
     change_gain(input_file=args.input, output_file=args.output)
 
