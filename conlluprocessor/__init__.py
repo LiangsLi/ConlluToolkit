@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 # Created by li huayong on 2020/4/10
+import re
 import json
 import pathlib
 import random
 from pprint import pprint
-from typing import List, Tuple
+from typing import List, Tuple, Any
 from conllu import parse, parse_incr, TokenList
 from conlluprocessor.base import load, save, is_conllu_data, check_or_load
 from conlluprocessor.statistic import statistics
 from conlluprocessor.convert import sdp_to_conllu, conllu_to_sdp
 
 
-def process(input_conllu_data_or_file, process_fn, output_conllu_file=None, strict=True):
+def process(input_conllu_data_or_file: Any, process_fn, output_conllu_file=None, strict=True):
     input_conllu_data = check_or_load(input_conllu_data_or_file, strict)
     output_result = []
     for sentence in input_conllu_data:
@@ -23,32 +24,49 @@ def process(input_conllu_data_or_file, process_fn, output_conllu_file=None, stri
     return output_result
 
 
-def search(conllu_data_or_file, output_file, head_word=None, head_pos=None, deprel=None, dependent_word=None,
-           dependent_pos=None):
-    def search_fun(sentence) -> Tuple[List, TokenList]:
+def find_pattern(conllu_data_or_file, output_file, pattern):
+    def find_fun(_sentence):
+        _sentence_str = ''.join(t['form'] for t in _sentence)
+        if re.findall(pattern, _sentence_str):
+            return _sentence
+        else:
+            return None
+
+    search_result = process(conllu_data_or_file, process_fn=find_fun, strict=True)
+    with open(output_file, 'w', encoding='utf-8')as f:
+        f.write(f'# Search {pattern}\n')
+        f.write(f'# {len(search_result)} sentences found\n\n')
+        for i, sentence in enumerate(search_result):
+            f.write(f'### {i + 1}\n')
+            f.write(sentence.serialize())
+
+
+def find_dependency(conllu_data_or_file, output_file, head_word=None, head_pos=None, deprel=None, dependent_word=None,
+                    dependent_pos=None):
+    def find_fun(_sentence) -> Tuple[List, TokenList]:
         sentence_search_result = []
-        for token in sentence:
+        for token in _sentence:
             if dependent_word and token['form'] != dependent_word:
                 continue
             if dependent_pos and token['upostag'] != dependent_pos:
                 continue
             for dep_label, head_id in token['deps']:
-                if head_word and sentence[head_id - 1]['form'] != head_word:
+                if head_word and _sentence[head_id - 1]['form'] != head_word:
                     continue
-                if head_pos and sentence[head_id - 1]['upostag'] != head_pos:
+                if head_pos and _sentence[head_id - 1]['upostag'] != head_pos:
                     continue
                 if dep_label == deprel:
                     sentence_search_result.append(
-                        f"### ({head_id},{sentence[head_id - 1]['form']},{sentence[head_id - 1]['upostag']})"
+                        f"### ({head_id},{_sentence[head_id - 1]['form']},{_sentence[head_id - 1]['upostag']})"
                         f" --{deprel}-> "
                         f"({token['id']},{token['form']},{token['upostag']})"
                     )
         if sentence_search_result:
-            return sentence_search_result, sentence
+            return sentence_search_result, _sentence
         else:
             return None
 
-    search_result = process(conllu_data_or_file, process_fn=search_fun, strict=True)
+    search_result = process(conllu_data_or_file, process_fn=find_fun, strict=True)
     with open(output_file, 'w', encoding='utf-8')as f:
         f.write(f'# Search [{head_word},{head_pos}] --{deprel}-> [{dependent_word},{dependent_pos}]\n')
         f.write(f'# {len(search_result)} sentences found\n\n')
