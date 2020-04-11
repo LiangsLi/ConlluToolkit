@@ -4,6 +4,6 @@ from conlluprocessor import diff
 
 if __name__ == '__main__':
     diff(
-        '/home/liangs/MyCodes/doing_codes/CSDP_Biaffine_Parser_lhy/CSDP_Biaffine_Parser_lhy/dataset/sem16_2019/fine_text.train.cor.sdp.conllu',
-        '/home/liangs/MyCodes/doing_codes/CSDP_Biaffine_Parser_lhy/CSDP_Biaffine_Parser_lhy/dataset/SemEval-2016-master/train/text.train.conll.conllu',
-        'text_train_diff.txt')
+        'text.test.coarse.conllu',
+        'coarse_text.test.conllu',
+        'coarse_text_test_diff.txt',ignore_pos=True)

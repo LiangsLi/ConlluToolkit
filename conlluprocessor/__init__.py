@@ -58,7 +58,10 @@ def search(conllu_data_or_file, output_file, head_word=None, head_pos=None, depr
             f.write(sentence.serialize())
 
 
-def diff(conllu_data_or_file_a, conllu_data_or_file_b, output_file, strict=True, ignore_root_id=True):
+def diff(conllu_data_or_file_a, conllu_data_or_file_b,
+         output_file, strict=True,
+         ignore_root_id=True, ignore_case=True,
+         ignore_pos=False):
     data_a, data_b = check_or_load(conllu_data_or_file_a, strict), check_or_load(conllu_data_or_file_b, strict)
 
     def convert2sentence2token_list(data):
@@ -68,7 +71,7 @@ def diff(conllu_data_or_file_a, conllu_data_or_file_b, output_file, strict=True,
             result[sentence_str] = sentence
         return result
 
-    def diff_sentence(sentence_a, sentence_b, ignore_root_id, ignore_case):
+    def diff_sentence(sentence_a, sentence_b):
         id2diff = {}
 
         def deps2dict(deps):
@@ -83,7 +86,7 @@ def diff(conllu_data_or_file_a, conllu_data_or_file_b, output_file, strict=True,
             diff_items = []
             if t_a['form'] != t_b['form']:
                 diff_items.append('form')
-            if t_a['upostag'] != t_b['upostag']:
+            if t_a['upostag'] != t_b['upostag'] and not ignore_pos:
                 diff_items.append('upostag')
             t_a_deps = deps2dict(t_a['deps'])
             t_b_deps = deps2dict(t_b['deps'])
@@ -127,7 +130,7 @@ def diff(conllu_data_or_file_a, conllu_data_or_file_b, output_file, strict=True,
         f.write('###' * 10 + '\n')
         i = 1
         for d in difference:
-            diffs = diff_sentence(data_a[d], data_b[d], ignore_root_id=True, ignore_case=True)
+            diffs = diff_sentence(data_a[d], data_b[d])
             if diffs:
                 f.write(f'### [difference] No.{i} {d}\n')
                 a_strs = data_a[d].serialize().split('\n')
