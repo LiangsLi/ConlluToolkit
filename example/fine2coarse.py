@@ -2,7 +2,8 @@
 # Created by li huayong on 2020/4/10
 import json
 import argparse
-
+import sys
+sys.path.append('..')
 from conlluprocessor import process
 
 with open('coarse2fine.json', 'r', encoding='utf-8')as f:

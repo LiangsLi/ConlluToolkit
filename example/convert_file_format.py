@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Created by li huayong on 2020/4/10
 import pathlib
+import sys
+sys.path.append('..')
 from conlluprocessor import sdp_to_conllu, conllu_to_sdp
 
 

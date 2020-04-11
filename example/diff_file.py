@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # Created by li huayong on 2020/4/10
+import sys
+sys.path.append('..')
 from conlluprocessor import diff
 
 if __name__ == '__main__':
