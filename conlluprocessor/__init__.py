@@ -5,14 +5,18 @@ import json
 import pathlib
 import random
 from pprint import pprint
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Callable, Union, Optional, Dict
 from conllu import parse, parse_incr, TokenList
 from conlluprocessor.base import load, save, is_conllu_data, check_or_load
 from conlluprocessor.statistic import statistics
 from conlluprocessor.convert import sdp_to_conllu, conllu_to_sdp
+from conlluprocessor.type import CONLLUDataOrPath, CONLLUData
 
 
-def process(input_conllu_data_or_file: Any, process_fn, output_conllu_file=None, strict=True):
+def process(input_conllu_data_or_file: CONLLUDataOrPath,
+            process_fn: Callable[[TokenList], Any],
+            output_conllu_file: str = None,
+            strict: bool = True):
     input_conllu_data = check_or_load(input_conllu_data_or_file, strict)
     output_result = []
     for sentence in input_conllu_data:
@@ -24,8 +28,22 @@ def process(input_conllu_data_or_file: Any, process_fn, output_conllu_file=None,
     return output_result
 
 
-def find_pattern(conllu_data_or_file, output_file, pattern):
-    def find_fun(_sentence):
+def find_pattern(conllu_data_or_file: CONLLUDataOrPath,
+                 output_file: str,
+                 pattern: str) -> None:
+    """
+    依据正则在conllu数据或者文件中查询句子
+    只匹配句子形式
+
+    Args:
+        conllu_data_or_file: 查询的conllu数据或者文件
+        output_file: 查询结果输出文件
+        pattern: 合法的正则模式
+
+    Returns:
+        无返回值
+    """
+    def find_fun(_sentence: TokenList) -> Optional[TokenList]:
         _sentence_str = ''.join(t['form'] for t in _sentence)
         if re.findall(pattern, _sentence_str):
             return _sentence
@@ -41,9 +59,33 @@ def find_pattern(conllu_data_or_file, output_file, pattern):
             f.write(sentence.serialize())
 
 
-def find_dependency(conllu_data_or_file, output_file, head_word=None, head_pos=None, deprel=None, dependent_word=None,
-                    dependent_pos=None):
-    def find_fun(_sentence) -> Tuple[List, TokenList]:
+def find_dependency(conllu_data_or_file: CONLLUDataOrPath,
+                    output_file: str,
+                    head_word: str = None,
+                    head_pos: str = None,
+                    deprel: str = None,
+                    dependent_word: str = None,
+                    dependent_pos: str = None) -> None:
+    """
+    依据依存条件在conllu数据或者文件中查找句子
+    这里支持的依存条件为：头节点单词、头节点词性、尾节点单词、尾节点词性、依存标签，以上条件可为空，但是至少有一个不为空
+
+    Args:
+        conllu_data_or_file: 查询的conllu数据或者文件
+        output_file: 查询结果输出文件
+        head_word: 头节点单词
+        head_pos: 头节点词性
+        deprel: 依存标签
+        dependent_word: 尾节点单词
+        dependent_pos: 尾节点词性
+
+    Returns:
+        无返回值
+    """
+    if not any([head_word, head_pos, deprel, dependent_word, dependent_pos]):
+        raise RuntimeError('至少需要指定一个查询条件[head_word, head_pos, deprel, dependent_word, dependent_pos]')
+
+    def find_fun(_sentence: TokenList) -> Optional[Tuple[List, TokenList]]:
         sentence_search_result = []
         for token in _sentence:
             if dependent_word and token['form'] != dependent_word:
@@ -76,31 +118,50 @@ def find_dependency(conllu_data_or_file, output_file, head_word=None, head_pos=N
             f.write(sentence.serialize())
 
 
-def diff(conllu_data_or_file_a, conllu_data_or_file_b,
-         output_file, strict=True,
-         ignore_root_id=True, ignore_case=True,
-         ignore_pos=False):
+def diff(conllu_data_or_file_a: CONLLUDataOrPath,
+         conllu_data_or_file_b: CONLLUDataOrPath,
+         output_file: str,
+         strict: bool = True,
+         ignore_root_id: bool = True,
+         ignore_case: bool = True,
+         ignore_pos: bool = False) -> None:
+    """
+    比较两个conllu文件或者数据，并输出不同
+    不同于原始的diff，这里比较的时候无视句子的顺利，而且以句子为单位比较
+
+    Args:
+        conllu_data_or_file_a: conllu数据或者文件a
+        conllu_data_or_file_b: conllu数据或者文件b
+        output_file: 比较结果的输出文件
+        strict: 是否要求是严格的conllu文件
+        ignore_root_id: 是否无视ROOT的根节点序号差异
+        ignore_case: 是否无视依存标签的大小写差异
+        ignore_pos: 是否无视词性的差异
+
+    Returns:
+        无返回值
+    """
     data_a, data_b = check_or_load(conllu_data_or_file_a, strict), check_or_load(conllu_data_or_file_b, strict)
 
-    def convert2sentence2token_list(data):
-        result = {}
-        for sentence in data:
-            sentence_str = ''.join([token['form'] for token in sentence])
-            result[sentence_str] = sentence
-        return result
+    def convert2sentence2token_list(data: CONLLUData) -> Dict[str, TokenList]:
+        _result = {}
+        for _sentence in data:
+            _sentence_str = ''.join([token['form'] for token in _sentence])
+            _result[_sentence_str] = _sentence
+        return _result
 
-    def diff_sentence(sentence_a, sentence_b):
-        id2diff = {}
+    def diff_sentence(_sentence_a: TokenList, _sentence_b: TokenList) -> Dict[str, List]:
+        _id2diff = {}
 
-        def deps2dict(deps):
+        def deps2dict(_deps: List[Tuple[str, int]]) -> Dict[str, int]:
             _d = {}
-            for _rel, _id in deps:
+            for _rel, _id in _deps:
                 if ignore_case:
                     _rel = _rel.lower()
                 _d[_rel] = _id
             return _d
 
-        for t_a, t_b in zip(sentence_a, sentence_b):
+        for t_a, t_b in zip(_sentence_a, _sentence_b):
             diff_items = []
             if t_a['form'] != t_b['form']:
                 diff_items.append('form')
@@ -118,8 +179,8 @@ def diff(conllu_data_or_file_a, conllu_data_or_file_b,
                         diff_items.append('deps')
                         break
             if diff_items:
-                id2diff[str(t_a['id'])] = diff_items
-        return id2diff
+                _id2diff[str(t_a['id'])] = diff_items
+        return _id2diff
 
     data_a, data_b = convert2sentence2token_list(data_a), convert2sentence2token_list(data_b)
     only_in_a = set(data_a.keys()) - set(data_b.keys())
@@ -161,7 +222,24 @@ def diff(conllu_data_or_file_a, conllu_data_or_file_b,
                 i += 1
 
 
-def split_date_set(conllu_data_or_file, train, dev, test, output_dir, shuffle=True, strict=True):
+def split_date_set(conllu_data_or_file: CONLLUDataOrPath,
+                   train: Union[int, float], dev: Union[int, float, None], test: Union[int, float],
+                   output_dir: str, shuffle: bool = True, strict: bool = True) -> Tuple:
+    """
+    按照比例或者数量切分数据集，结果写入文件同时返回
+
+    Args:
+        conllu_data_or_file: 等待切分的conllu数据或者文件路径
+        train: 训练集大小（数量或者比例）
+        dev: 验证集大小（数量或者比例）
+        test: 测试集大小（数量或者比例）
+        output_dir: 输出文件的文件夹路径
+        shuffle: 切分前是否打乱顺利
+        strict: 是否要求输入数据是必须是conllu（如False则支持semeval16的原始数据格式）
+
+    Returns:
+        返回切分后的训练集、验证集、测试集数据
+    """
     if not pathlib.Path(output_dir).is_dir():
         raise RuntimeError(f'output_dir({output_dir} is not dir)')
     conllu_data = check_or_load(conllu_data_or_file, strict)
