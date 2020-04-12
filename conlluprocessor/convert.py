@@ -2,8 +2,20 @@
 # Created by li huayong on 2020/4/10
 
 
-def sdp_to_conllu(sdp_filename, conllu_filename):
-    with open(sdp_filename, encoding='utf-8') as f, open(conllu_filename, 'w', encoding='utf-8') as g:
+def semeval16_to_conllu(semeval16_filename: str, conllu_filename: str) -> None:
+    """
+    将semeval16使用的原始数据格式转换为标准的conllu格式
+    强烈建议使用标准的conllu格式保存语义/句法依存结果，semeval16使用的原始数据格式对数据处理并不友好
+    conlluprocessor的方法基于标准的conllu格式编写，处理semeval格式时会出现错误！
+
+    Args:
+        semeval16_filename: semeval16格式的文件
+        conllu_filename: 输出的conllu格式文件
+
+    Returns:
+        无返回值
+    """
+    with open(semeval16_filename, encoding='utf-8') as f, open(conllu_filename, 'w', encoding='utf-8') as g:
         sents = f.read().strip().split('\n\n')
         for sent in sents:
             conllu_form = []
@@ -28,8 +40,20 @@ def sdp_to_conllu(sdp_filename, conllu_filename):
             g.write('\n'.join(conllu_form) + '\n\n')
 
 
-def conllu_to_sdp(conllu_filename, sdp_filename):
-    with open(conllu_filename, encoding='utf-8') as f, open(sdp_filename, 'w', encoding='utf-8') as g:
+def conllu_to_semeval16(conllu_filename: str, semeval16_filename: str) -> None:
+    """
+    将conllu格式的数据转化为semeval16使用的原始数据格式
+    强烈建议使用标准的conllu格式保存语义/句法依存结果，semeval16使用的原始数据格式对数据处理并不友好
+    conlluprocessor的方法基于标准的conllu格式编写，处理semeval格式时会出现错误！
+
+    Args:
+        conllu_filename: conllu格式文件
+        semeval16_filename: 输出的semeval16格式文件
+
+    Returns:
+        无返回值
+    """
+    with open(conllu_filename, encoding='utf-8') as f, open(semeval16_filename, 'w', encoding='utf-8') as g:
         buff = []
         for line in f:
             line = line.strip('\n')

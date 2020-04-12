@@ -9,7 +9,7 @@ from typing import List, Tuple, Any, Callable, Union, Optional, Dict
 from conllu import parse, parse_incr, TokenList
 from conlluprocessor.base import load, save, is_conllu_data, check_or_load
 from conlluprocessor.statistic import statistics
-from conlluprocessor.convert import sdp_to_conllu, conllu_to_sdp
+from conlluprocessor.convert import semeval16_to_conllu, conllu_to_semeval16
 from conlluprocessor.type import CONLLUDataOrPath, CONLLUData
 
 
@@ -17,6 +17,22 @@ def process(input_conllu_data_or_file: CONLLUDataOrPath,
             process_fn: Callable[[TokenList], Any],
             output_conllu_file: str = None,
             strict: bool = True):
+    """
+    自定义处理接口
+    接受一个自定义处理函数，接口函数会将每个句子传入自定义处理函数，
+    然后接收自定义函数的返回值，如果返回值是None，则不保存；若非None，则保存
+    若最后计算得到的数据符合CoNllu的格式，则会写入文件，同时返回；若非CoNllu格式，则只返回
+
+    Args:
+        input_conllu_data_or_file: 待处理的conllu数据或者文件路径
+        process_fn: 自定义处理函数
+        output_conllu_file: 处理的输出conllu文件
+        strict: 是否严格要求必须是conllu格式
+
+    Returns:
+        返回处理后的结果
+
+    """
     input_conllu_data = check_or_load(input_conllu_data_or_file, strict)
     output_result = []
     for sentence in input_conllu_data:

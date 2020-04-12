@@ -3,36 +3,39 @@
 import json
 import pathlib
 from pprint import pprint
+from collections import Counter
 from typing import List, Tuple
 from conllu import parse, parse_incr, TokenList
+from conlluprocessor.base import check_or_load
+from conlluprocessor.type import CONLLUData, CONLLUDataOrPath
 
 
-def statistic_non_projective(sentence_dep_pairs: List[Tuple[int, int]]):
+def statistics(conllu_data_or_file: CONLLUDataOrPath) -> Tuple[str, Counter, Counter]:
     """
-    统计传入的依存序号列表中是否存在非投射现象，以及非投射的数量
-    :param sentence_dep_pairs: List[Tuple[int]]
-    :return:
-    """
-    non_projective_pairs = []
-    for i in range(len(sentence_dep_pairs)):
-        for j in range(i + 1, len(sentence_dep_pairs)):
-            if sentence_dep_pairs[i][0] < sentence_dep_pairs[j][0]:
-                pair_a, pair_b = sentence_dep_pairs[i], sentence_dep_pairs[j]
-            else:
-                pair_a, pair_b = sentence_dep_pairs[j], sentence_dep_pairs[i]
-            if pair_a[0] < pair_b[0] < pair_a[1] < pair_b[1]:
-                non_projective_pairs.append((pair_a, pair_b))
-    return len(non_projective_pairs), non_projective_pairs
+    统计
 
+    Args:
+        conllu_data_or_file: conllu数据或者文件路径
 
-def statistics(conllu_data: List[TokenList]):
+    Returns:
+        返回统计信息字符串，词表，依存标签表
     """
-    统计传入的conllu data（使用conllu模块加载）
-    conllu模块:https://github.com/EmilStenstrom/conllu
-    :param conllu_data: List[TokenList] conllu数据
-    :return: tuple：(result:Str, token_vocab:Counter, label_vocab:Counter) 统计结果；词表；依存标签表
-    """
-    from collections import Counter
+    conllu_data = check_or_load(conllu_data_or_file)
+
+    def statistic_non_projective(_sentence_dep_pairs: List[Tuple[int, int]]):
+        """统计传入的依存序号列表中是否存在非投射现象，以及非投射的数量
+        """
+        non_projective_pairs = []
+        for i in range(len(_sentence_dep_pairs)):
+            for j in range(i + 1, len(_sentence_dep_pairs)):
+                if _sentence_dep_pairs[i][0] < _sentence_dep_pairs[j][0]:
+                    pair_a, pair_b = _sentence_dep_pairs[i], _sentence_dep_pairs[j]
+                else:
+                    pair_a, pair_b = _sentence_dep_pairs[j], _sentence_dep_pairs[i]
+                if pair_a[0] < pair_b[0] < pair_a[1] < pair_b[1]:
+                    non_projective_pairs.append((pair_a, pair_b))
+        return len(non_projective_pairs), non_projective_pairs
+
     token_vocab = Counter()
     label_vocab = Counter()
     sentences_num = len(conllu_data)
