@@ -1,0 +1,12 @@
+[flake8]
+# [Flake8 Rules](https://www.flake8rules.com/)
+ignore = E501, W503
+exclude =
+    .git,
+    __pycache__,
+    docs/source/conf.py,
+    old,
+    build,
+    dist
+max-complexity = 10
+max-line-length = 119

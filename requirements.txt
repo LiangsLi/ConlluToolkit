@@ -1,5 +1,4 @@
-conllu==2.2.1
 msmb_theme==1.2.0
 typing==3.7.4
-sphinx-autodoc-typehints
-
+numpy==1.16.4
+conllu==2.2.1
