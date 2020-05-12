@@ -45,7 +45,7 @@ def find_pattern(
             f.write(sentence.serialize())
 
 
-def find_dependency(  # noqa C901
+def find_dependency(  # noqa: C901
     conllu_data_or_file: CONLLUDataOrPath,
     output_file: str,
     head_word: str = None,

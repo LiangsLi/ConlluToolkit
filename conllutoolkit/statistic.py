@@ -76,7 +76,7 @@ def statistics(conllu_data_or_file: CONLLUDataOrPath) -> Tuple[str, Counter, Cou
     return result, token_vocab, label_vocab
 
 
-def diff(  # noqa C901
+def diff(  # noqa: C901
     conllu_data_or_file_a: CONLLUDataOrPath,
     conllu_data_or_file_b: CONLLUDataOrPath,
     output_file: str,
