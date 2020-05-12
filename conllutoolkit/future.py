@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Created by li huayong on 2020/4/11
 
 
@@ -30,5 +29,5 @@ def generate_raw_conllu(raw_sentences, output_file):
     raise NotImplementedError()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
