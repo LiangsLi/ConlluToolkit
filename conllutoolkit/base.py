@@ -97,7 +97,7 @@ def process(
     process_fn: Callable[[TokenList], Any],
     output_conllu_file: str = None,
     strict: bool = True,
-):
+) -> List:
     """
     自定义处理接口
     接受一个自定义处理函数，接口函数会将每个句子传入自定义处理函数，

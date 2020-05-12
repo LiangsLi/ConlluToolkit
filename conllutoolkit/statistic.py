@@ -25,7 +25,9 @@ def statistics(conllu_data_or_file: CONLLUDataOrPath) -> Tuple[str, Counter, Cou
     """
     conllu_data = check_or_load(conllu_data_or_file)
 
-    def statistic_non_projective(_sentence_dep_pairs: List[Tuple[int, int]]):
+    def statistic_non_projective(
+        _sentence_dep_pairs: List[Tuple[int, int]]
+    ) -> Tuple[int, List]:
         """统计传入的依存序号列表中是否存在非投射现象，以及非投射的数量
         """
         non_projective_pairs = []
