@@ -1,6 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
-coarse2fine.json
+example/data/coarse2fine.json
 coarse2fine.txt
+coarse2fine.json
+tmp/
 data_process_script/
 data/
 main.py
