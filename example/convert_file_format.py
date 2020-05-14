@@ -1,13 +1,15 @@
+# flake8: noqa
+# type: ignore
 # Created by li huayong on 2020/4/10
 import pathlib
 import sys
 from typing import Union
 
+sys.path.append("..")
+
 from conllutoolkit.convert import semeval16_to_conllu  # type: ignore
 
 # from conllutoolkit.convert import conllu_to_semeval16  # type: ignore
-
-sys.path.append("..")
 
 
 def main():
