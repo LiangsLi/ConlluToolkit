@@ -1,10 +1,10 @@
-.. CoNLL-U File Processor documentation master file, created by
-   sphinx-quickstart on Sun Apr 12 21:49:14 2020.
+.. ConlluToolkit documentation master file, created by
+   sphinx-quickstart on Tue May 12 16:49:29 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to CoNLL-U File Processor's documentation!
-==================================================
+Welcome to ConlluToolkit's documentation!
+=========================================
 
 .. toctree::
    :maxdepth: 2

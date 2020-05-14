@@ -1,7 +1,7 @@
-conlluprocessor
-===============
+conllutoolkit
+=============
 
 .. toctree::
    :maxdepth: 4
 
-   conlluprocessor
+   conllutoolkit
