@@ -12,6 +12,10 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../.."))  # 确保Sphinx能看到项目的代码路径,否则将无法生成API文档
 
 project = "ConlluToolkit"
 copyright = "2020, Liangs Li"
@@ -26,7 +30,13 @@ release = "1.0"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = [
+    "sphinx.ext.napoleon",  # 支持google风格的文档
+    "sphinx.ext.autodoc",  # 自动生成文档
+    "sphinx_autodoc_typehints",  # 支持type hints
+    "sphinx.ext.todo",
+    "sphinx.ext.githubpages",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
