@@ -17,6 +17,9 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../.."))  # 确保Sphinx能看到项目的代码路径,否则将无法生成API文档
 
+import recommonmark
+from recommonmark.transform import AutoStructify
+
 project = "ConlluToolkit"
 copyright = "2020, Liangs Li"
 author = "Liangs Li"
@@ -24,6 +27,7 @@ author = "Liangs Li"
 # The full version, including alpha/beta/rc tags
 release = "1.0"
 
+source_suffix = [".rst", ".md"]
 
 # -- General configuration ---------------------------------------------------
 
@@ -34,18 +38,27 @@ extensions = [
     "sphinx.ext.napoleon",  # 支持google风格的文档
     "sphinx.ext.autodoc",  # 自动生成文档
     "sphinx_autodoc_typehints",  # 支持type hints
-    "sphinx.ext.todo",
-    "sphinx.ext.githubpages",
+    # "sphinx.ext.todo",
+    # "sphinx.ext.githubpages",
+    "recommonmark",
 ]
+
+# The master toctree document.
+master_doc = "index"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ["_build", "example", "examples", "test", "tests"]
 
+# The reST default role (used for this markup: `text`) to use for all
+# documents.
+default_role = None
+
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = "sphinx"
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -58,3 +71,23 @@ html_theme = "alabaster"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# Output file base name for HTML help builder.
+htmlhelp_basename = "ConlluToolkitDoc"
+
+
+# app setup hook
+def setup(app):
+    app.add_config_value(
+        "conllutoolkit_config",
+        {
+            #'url_resolver': lambda url: github_doc_root + url,
+            "auto_toc_tree_section": "Contents",
+            "enable_math": False,
+            "enable_inline_math": False,
+            "enable_eval_rst": True,
+            "enable_auto_doc_ref": True,
+        },
+        True,
+    )
+    app.add_transform(AutoStructify)
