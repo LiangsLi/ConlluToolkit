@@ -19,7 +19,8 @@ sys.path.insert(0, os.path.abspath("../.."))  # 确保Sphinx能看到项目的�
 
 import recommonmark
 from recommonmark.transform import AutoStructify
-from recommonmark.parser import CommonMarkParser
+
+# from recommonmark.parser import CommonMarkParser
 
 project = "ConlluToolkit"
 copyright = "2020, Liangs Li"
@@ -43,9 +44,9 @@ extensions = [
     "recommonmark",
 ]
 
-source_parsers = {
-    ".md": CommonMarkParser,
-}
+# source_parsers = {
+#     ".md": CommonMarkParser,
+# }
 
 source_suffix = [".rst", ".md"]
 
