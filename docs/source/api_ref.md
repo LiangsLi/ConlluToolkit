@@ -1,5 +1,6 @@
 conllutoolkit package
 =====================
+This document is for developers of conllutoolkit, it contans the API functions
 
 Submodules
 ----------
