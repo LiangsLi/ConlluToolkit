@@ -4,7 +4,7 @@
 Contents
 --------
 
-* [API Reference](api_ref.rst)
+* [API Reference](api_ref.md)
 
 ## About
 
