@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.abspath("../.."))  # 确保Sphinx能看到项目的�
 
 import recommonmark
 from recommonmark.transform import AutoStructify
+from recommonmark.parser import CommonMarkParser
 
 project = "ConlluToolkit"
 copyright = "2020, Liangs Li"
@@ -27,11 +28,6 @@ author = "Liangs Li"
 # The full version, including alpha/beta/rc tags
 release = "1.0"
 
-source_suffix = {
-    ".rst": "restructuredtext",
-    ".txt": "markdown",
-    ".md": "markdown",
-}
 
 # -- General configuration ---------------------------------------------------
 
@@ -46,6 +42,12 @@ extensions = [
     # "sphinx.ext.githubpages",
     "recommonmark",
 ]
+
+source_parsers = {
+    ".md": CommonMarkParser,
+}
+
+source_suffix = [".rst", ".md"]
 
 # The master toctree document.
 master_doc = "index"
