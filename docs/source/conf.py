@@ -27,7 +27,11 @@ author = "Liangs Li"
 # The full version, including alpha/beta/rc tags
 release = "1.0"
 
-source_suffix = [".rst", ".md"]
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".txt": "markdown",
+    ".md": "markdown",
+}
 
 # -- General configuration ---------------------------------------------------
 
